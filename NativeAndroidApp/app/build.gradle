@@ -1,0 +1,78 @@
+apply plugin: 'com.android.application'
+//必须配置
+def mfph = [
+        //包名
+        "apk.applicationId" : "com.unity.mynativeapp",
+]
+
+android {
+    compileSdkVersion 29
+
+    defaultConfig {
+        applicationId "com.unity.mynativeapp"
+        minSdkVersion 22 // uniapp必须是19及以上
+        targetSdkVersion 29 //最高28最优26 设置值域超过28可能在android10以上手机出现白屏问题。,HX2.8.11+已支持targetSdkVersion设置30
+        ndk {
+            // By default all ABIs would be added if non is defined
+            // Clear method should clear ABIs list forcing app to respect its' modules settings (unityLibrary in this case)
+            // Default ABIs list would be set later, therefore clear would not work here without setting some values first
+            abiFilters "armeabi-v7a", "arm64-v8a"
+            abiFilters.clear()
+        }
+        //此处配置必须添加 否则无法正确运行
+        manifestPlaceholders = mfph
+        aaptOptions {
+            additionalParameters '--auto-add-overlay'
+            //noCompress 'foo', 'bar'
+            ignoreAssetsPattern "!.svn:!.git:.*:!CVS:!thumbs.db:!picasa.ini:!*.scc:*~"
+        }
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+//导入aar需要的配置
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+
+    implementation project(':unityLibrary')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(dir: project(':unityLibrary').getProjectDir().toString() + ('\\libs'), include: ['*.jar'])
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    //noinspection GradleCompatible
+    implementation 'com.android.support:design:28.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    //导入SDK相关依赖jar、aar
+//    implementation fileTree(include: ['*.aar'], dir: 'libs')
+    //必须添加的依赖
+    //noinspection GradleCompatible
+//    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    //noinspection GradleCompatible
+//    implementation 'com.android.support:support-v4:28.0.0'
+    //noinspection GradleCompatible
+//    implementation 'com.android.support:appcompat-v7:28.0.0'
+//    implementation 'com.alibaba:fastjson:1.2.66'
+//    implementation 'com.facebook.fresco:fresco:1.13.0'
+//    implementation 'com.facebook.fresco:animated-gif:1.13.0'
+//    implementation 'com.github.bumptech.glide:glide:4.9.0'
+//    implementation 'com.android.support:multidex:1.0.3'
+}
+
